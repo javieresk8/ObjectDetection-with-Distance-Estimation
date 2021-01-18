@@ -154,8 +154,6 @@ if __name__ == "__main__":
                         distancia = calcularDistancia(ancho_caja_trans, DISTANCIA_INIC_CELULAR, PIXELES_DIST_INIC_PERSONA)
                     elif classes[int(cls_pred)] == "cell phone":
                         distancia = calcularDistancia(ancho_caja_trans, DISTANCIA_INIC_CELULAR, PIXELES_DIST_INIC_CELULAR)    
-
-                    #distancia = calcularDistancia(ancho_caja_trans, DISTANCIA_INIC_CELULAR, PIXELES_DIST_INIC_CELULAR)
                     
                     #Escribimos la distancia
                     cv2.putText(frame, str(distancia) + "cm", centroide, 0, 1, (255,0,0), 3, cv2.LINE_AA)
