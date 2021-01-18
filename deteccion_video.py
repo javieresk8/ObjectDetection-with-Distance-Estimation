@@ -13,11 +13,15 @@ from torch.autograd import Variable
 ##Datos iniciales para medir distancia de un celular a la camara (CM)
 DISTANCIA_INIC_CELULAR = 50 
 PIXELES_DIST_INIC_CELULAR = 380 #Tomado del video
-ANCHO_REAL_CELULAR = 13.5
+#ANCHO_REAL_CELULAR = 13.5
+
+##Datos iniciales para medir distancia de una persona a la camara (CM)
+DISTANCIA_INIC_PERSONA = 50 
+PIXELES_DIST_INIC_PERSONA = 1040 #Tomado del video
+#ANCHO_REAL_CELULAR = 13.5
 
 
 def Convertir_RGB(img):
-    # Convertir Blue, green, red a Red, green, blue
     b = img[:, :, 0].copy()
     g = img[:, :, 1].copy()
     r = img[:, :, 2].copy()
@@ -28,7 +32,6 @@ def Convertir_RGB(img):
 
 
 def Convertir_BGR(img):
-    # Convertir red, blue, green a Blue, green, red
     r = img[:, :, 0].copy()
     g = img[:, :, 1].copy()
     b = img[:, :, 2].copy()
@@ -50,13 +53,14 @@ def calcularFocal(anchoPixeles, distInicial, anchoReal):
     return (anchoPixeles*distInicial)/anchoReal
 
 
-#def calcularDistancia(anchoPixeles, distInicial, anchoReal, anchoVariable):
-   #la distancia se calcula para un objeto como un celular
-#    focal = calcularFocal(anchoPixeles, distInicial, anchoReal)
-#    return anchoReal * focal / anchoVariable
 
 def calcularDistancia(anchoVariable, distInic, pixInic):
     return round(pixInic*distInic/anchoVariable, 2)
+
+def obtenerDistanciaClase(clase):
+    switcher = {
+
+    }
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -132,7 +136,7 @@ if __name__ == "__main__":
                     ancho_caja = x2 - x1
                     altura_caja = y2 - y1
                     color = [int(c) for c in colors[int(cls_pred)]]
-                    print("Se detectó {} en X1: {}, Y1: {}, X2: {}, Y2: {}".format(classes[int(cls_pred)], x1, y1, x2, y2))
+                    print("Se detectó {} en X1= {}, Y1= {}, X2= {}, Y2= {}".format(classes[int(cls_pred)], x1, y1, x2, y2))
                     frame = cv2.rectangle(frame, (x1, y1 + altura_caja), (x2, y1), color, 5)
                     cv2.putText(frame, classes[int(cls_pred)], (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 5)# Nombre de la clase detectada
                     cv2.putText(frame, str("%.2f" % float(conf)), (x2, y2 - altura_caja), cv2.FONT_HERSHEY_SIMPLEX, 0.5,color, 5) # Certeza de prediccion de la clase
@@ -141,8 +145,18 @@ if __name__ == "__main__":
                     dibujarLinea(frame, (640,960), centroide, (0,255,0), 3)
                     
                     #CALCULAMOS LA DISTANCIA
+                    #Inicio switch 
+
+
+                    #=============================================
                     ancho_caja_trans = obtenerAnchoCaja(x1, x2)
-                    distancia = calcularDistancia(ancho_caja_trans, DISTANCIA_INIC_CELULAR, PIXELES_DIST_INIC_CELULAR)
+                    if classes[int(cls_pred)] == "person":
+                        distancia = calcularDistancia(ancho_caja_trans, DISTANCIA_INIC_CELULAR, PIXELES_DIST_INIC_PERSONA)
+                    elif classes[int(cls_pred)] == "cell phone":
+                        distancia = calcularDistancia(ancho_caja_trans, DISTANCIA_INIC_CELULAR, PIXELES_DIST_INIC_CELULAR)    
+
+                    #distancia = calcularDistancia(ancho_caja_trans, DISTANCIA_INIC_CELULAR, PIXELES_DIST_INIC_CELULAR)
+                    
                     #Escribimos la distancia
                     cv2.putText(frame, str(distancia) + "cm", centroide, 0, 1, (255,0,0), 3, cv2.LINE_AA)
                 
@@ -155,9 +169,8 @@ if __name__ == "__main__":
         else:
             out.write(Convertir_BGR(RGBimg))
             cv2.imshow('frame', RGBimg)
-        #cv2.waitKey(0)
-
-        if cv2.waitKey(25) & 0xFF == ord('q'):
+        #Para cerrar el frame presionamos x
+        if cv2.waitKey(25) & 0xFF == ord('x'):
             break
     out.release()
     cap.release()
