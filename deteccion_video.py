@@ -9,17 +9,25 @@ import cv2
 from PIL import Image
 import torch
 from torch.autograd import Variable
+import requests
 
 ##Datos iniciales para medir distancia de un celular a la camara (CM)
-DISTANCIA_INIC_CELULAR = 50 
-PIXELES_DIST_INIC_CELULAR = 380 #Tomado del video
+DISTANCIA_INIC_CELULAR = 55 
+AREA_INIC_CELULAR = 93 #Tomado del video
 #ANCHO_REAL_CELULAR = 13.5
 
 ##Datos iniciales para medir distancia de una persona a la camara (CM)
-DISTANCIA_INIC_PERSONA = 50 
-PIXELES_DIST_INIC_PERSONA = 1040 #Tomado del video
+DISTANCIA_INIC_PERSONA = 55 
+AREA_INIC_PERSONA = 942 #Tomado del video
 #ANCHO_REAL_CELULAR = 13.5
 
+##Datos iniciales para medir distancia de un gato a la camara (CM)
+DISTANCIA_INIC_CAT = 55 
+AREA_INIC_CAT = 920 #Tomado del video
+
+##Datos iniciales para medir distancia de una mochila a la camara (CM)
+DISTANCIA_INIC_MOCHILA = 90 
+AREA_INIC_MOCHILA = 420 #Tomado del video
 
 def Convertir_RGB(img):
     b = img[:, :, 0].copy()
@@ -49,13 +57,16 @@ def obtenerCentroide(x1, y1, x2, y2):
 def obtenerAnchoCaja(x1, x2):
     return round(float(x2) - float(x1), 2)
 
+def obtenerAreaCaja(ancho, alto):
+    return round((float(ancho)* float(alto)/1000), 2)
+
 def calcularFocal(anchoPixeles, distInicial, anchoReal):
     return (anchoPixeles*distInicial)/anchoReal
 
 
 
-def calcularDistancia(anchoVariable, distInic, pixInic):
-    return round(pixInic*distInic/anchoVariable, 2)
+def calcularDistancia(areaVariable, distInic, areaInic):
+    return round(areaInic*distInic/areaVariable, 2) 
 
 def obtenerDistanciaClase(clase):
     switcher = {
@@ -93,8 +104,10 @@ if __name__ == "__main__":
     classes = load_classes(opt.class_path)
     Tensor = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor
     if opt.webcam==1:
+        #URL de IP WEBCAM
+        url = 'http://192.168.0.32:8080/shot.jpg'
         #Aqui toma el video de la webcam
-        cap = cv2.VideoCapture(0)
+        cap = cv2.VideoCapture(0) #No cambiamos en ningun caso
         out = cv2.VideoWriter('output.mp4',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (1280,960))
     else:
         #Toma el video que este en el directorio
@@ -109,6 +122,11 @@ if __name__ == "__main__":
         ret, frame = cap.read()
         if ret is False:
             break
+        #Tomamos la imagen de IP WEbcam
+        img_resp = requests.get(url)
+        img_arr = np.array(bytearray(img_resp.content), dtype=np.uint8)
+        frame = cv2.imdecode(img_arr, -1)
+
         #Creamos e; frame 
         frame = cv2.resize(frame, (1280, 960), interpolation=cv2.INTER_CUBIC)
         #LA imagen viene en Blue, Green, Red y la convertimos a RGB que es la entrada que requiere el modelo
@@ -132,6 +150,11 @@ if __name__ == "__main__":
             if detection is not None:
                 detection = rescale_boxes(detection, opt.img_size, RGBimg.shape[:2])
                 for x1, y1, x2, y2, conf, cls_conf, cls_pred in detection:
+                    #Validamos que no sea una clase que no buscamos 
+                    if classes[int(cls_pred)] == 'null':
+                        continue
+                    print("Saltamos una clase===============================")
+
                     #Calculamos dimensiones de la caja
                     ancho_caja = x2 - x1
                     altura_caja = y2 - y1
@@ -146,15 +169,21 @@ if __name__ == "__main__":
                     
                     #CALCULAMOS LA DISTANCIA
                     #Inicio switch 
-
-
                     #=============================================
-                    ancho_caja_trans = obtenerAnchoCaja(x1, x2)
-                    if classes[int(cls_pred)] == "person":
-                        distancia = calcularDistancia(ancho_caja_trans, DISTANCIA_INIC_CELULAR, PIXELES_DIST_INIC_PERSONA)
-                    elif classes[int(cls_pred)] == "cell phone":
-                        distancia = calcularDistancia(ancho_caja_trans, DISTANCIA_INIC_CELULAR, PIXELES_DIST_INIC_CELULAR)    
+                    #ancho_caja_trans = obtenerAnchoCaja(x1, x2)
+                    distancia = 0
+                    area_caja_trans = obtenerAreaCaja(ancho_caja,altura_caja)
+                    if classes[int(cls_pred)] == "persona":
+                        distancia = calcularDistancia(area_caja_trans, DISTANCIA_INIC_PERSONA, AREA_INIC_PERSONA)
+                    elif classes[int(cls_pred)] == "celular":
+                        distancia = calcularDistancia(area_caja_trans, DISTANCIA_INIC_CELULAR, AREA_INIC_CELULAR)    
+                    elif classes[int(cls_pred)] == "mochila":
+                        distancia = calcularDistancia(area_caja_trans, DISTANCIA_INIC_MOCHILA, AREA_INIC_MOCHILA)    
                     
+                    #Prueba de referencia
+                    area_ref = obtenerAreaCaja(ancho_caja, altura_caja) 
+                    #cv2.putText(frame, str(area_ref) + "cm^2", centroide, 0, 1, (255,0,0), 3, cv2.LINE_AA)
+
                     #Escribimos la distancia
                     cv2.putText(frame, str(distancia) + "cm", centroide, 0, 1, (255,0,0), 3, cv2.LINE_AA)
                 
