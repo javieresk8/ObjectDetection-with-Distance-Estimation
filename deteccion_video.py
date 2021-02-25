@@ -15,10 +15,10 @@ import requests
 DISTANCIA_INIC_CELULAR = 55 
 AREA_INIC_CELULAR = 93 #Tomado del video
 #ANCHO_REAL_CELULAR = 13.5
-
+#Medidas tomadas de una altura de 131cm.
 ##Datos iniciales para medir distancia de una persona a la camara (CM)
-DISTANCIA_INIC_PERSONA = 55 
-AREA_INIC_PERSONA = 942 #Tomado del video
+DISTANCIA_INIC_PERSONA = 335 
+AREA_INIC_PERSONA = 114 #Tomado del video
 #ANCHO_REAL_CELULAR = 13.5
 
 ##Datos iniciales para medir distancia de un gato a la camara (CM)
@@ -182,10 +182,10 @@ if __name__ == "__main__":
                     
                     #Prueba de referencia
                     area_ref = obtenerAreaCaja(ancho_caja, altura_caja) 
-                    #cv2.putText(frame, str(area_ref) + "cm^2", centroide, 0, 1, (255,0,0), 3, cv2.LINE_AA)
+                    cv2.putText(frame, str(area_ref) + "cm^2", centroide, 0, 1, (255,0,0), 3, cv2.LINE_AA)
 
                     #Escribimos la distancia
-                    cv2.putText(frame, str(distancia) + "cm", centroide, 0, 1, (255,0,0), 3, cv2.LINE_AA)
+                    #cv2.putText(frame, str(distancia) + "cm", centroide, 0, 1, (255,0,0), 3, cv2.LINE_AA)
                 
         #
         #Convertimos de vuelta a BGR para que cv2 pueda desplegarlo en los colores correctos
