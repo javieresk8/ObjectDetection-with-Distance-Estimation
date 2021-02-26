@@ -6,7 +6,8 @@ import os
 import random
 from gtts import gTTS 
 
-
+r= sr.Recognizer()
+mic = sr.Microphone()
 def hablar(au_string):
     tts = gTTS(text=au_string, lang='es') #slow= True
     r = random.randint(1, 1000000)
@@ -17,14 +18,16 @@ def hablar(au_string):
     os.remove(audio_file)
 
 def grabarAudio():
-    r= sr.Recognizer()
+    
     #Asi podemos reconocer los microfonos disponibles, es este caso 7 es el de default
     #print(sr.Microphone.list_microphone_names()[7])
-    mic = sr.Microphone(device_index=7)
     voice = ''
+    #print('falle...')
     with mic as source:
+        
         r.adjust_for_ambient_noise(source)
         audio = r.listen(source)
+        #print('falle...')
         try:
             voice = r.recognize_google(audio, language='es-MX')
         except sr.UnknownValueError:
@@ -81,13 +84,14 @@ fraseObjetosAlFrente = 'Al frente tienes'
 try:
     while(1): 
         print('Estoy escuchando')
+        
         entrada = grabarAudio()
         entrada = entrada.lower()
         if nombreAsistente in entrada: 
             responder(entrada)
             print(entrada)
         else:
-            "Estoy esperando"
+            print("Estoy esperando")
         #if ('adiós' in entrada):
          #   hablar(fraseDespedida)
           #  sys.exit()
@@ -97,5 +101,7 @@ try:
         #    hablar(fraseBienvenido)
         #else: 
          #   print('Sigo esperando...')
-except:
+except sr.UnknownValueError: 
     print('No escucho nada...')
+except sr.RequestError as e:
+    print("Ocurrio un error ..." + e)

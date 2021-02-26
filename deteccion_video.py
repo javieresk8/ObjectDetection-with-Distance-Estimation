@@ -11,23 +11,80 @@ import torch
 from torch.autograd import Variable
 import requests
 
-##Datos iniciales para medir distancia de un celular a la camara (CM)
-DISTANCIA_INIC_CELULAR = 55 
-AREA_INIC_CELULAR = 93 #Tomado del video
-#ANCHO_REAL_CELULAR = 13.5
+
+
 #Medidas tomadas de una altura de 131cm.
 ##Datos iniciales para medir distancia de una persona a la camara (CM)
 DISTANCIA_INIC_PERSONA = 335 
 AREA_INIC_PERSONA = 114 #Tomado del video
-#ANCHO_REAL_CELULAR = 13.5
+
 
 ##Datos iniciales para medir distancia de un gato a la camara (CM)
-DISTANCIA_INIC_CAT = 55 
-AREA_INIC_CAT = 920 #Tomado del video
+DISTANCIA_INIC_GATO = 200 
+AREA_INIC_GATO = 17 #Tomado del video
 
-##Datos iniciales para medir distancia de una mochila a la camara (CM)
-DISTANCIA_INIC_MOCHILA = 90 
-AREA_INIC_MOCHILA = 420 #Tomado del video
+##Datos iniciales para medir distancia de una botella a la camara (CM)
+DISTANCIA_INIC_BOTELLA = 37 
+AREA_INIC_BOTELLA = 123 #Tomado del video
+
+##Datos iniciales para medir distancia de una TAZA a la camara (CM)
+DISTANCIA_INIC_TAZA = 37 
+AREA_INIC_TAZA = 94 #Tomado del video
+
+##Datos iniciales para medir distancia de una TENEDOR a la camara (CM)
+DISTANCIA_INIC_TENEDOR = 37 
+AREA_INIC_TENEDOR = 35 #Tomado del video
+
+##Datos iniciales para medir distancia de una CUCHILLO a la camara (CM)
+DISTANCIA_INIC_CUCHILLO = 37 
+AREA_INIC_CUCHILLO = 60 #Tomado del video
+
+##Datos iniciales para medir distancia de una CUCHARA a la camara (CM)
+DISTANCIA_INIC_CUCHARA = 37 
+AREA_INIC_CUCHARA = 75 #Tomado del video
+
+##Datos iniciales para medir distancia de una SILLA a la camara (CM)
+DISTANCIA_INIC_SILLA = 150 
+AREA_INIC_SILLA = 240 #Tomado del video
+
+##Datos iniciales para medir distancia de una CAMA a la camara (CM)
+DISTANCIA_INIC_CAMA = 150 
+AREA_INIC_CAMA = 830 #Tomado del video
+
+##Datos iniciales para medir distancia de una INODORO a la camara (CM)
+DISTANCIA_INIC_INODORO = 105 
+AREA_INIC_INODORO = 320 #Tomado del video
+
+##Datos iniciales para medir distancia de una MONITOR a la camara (CM)
+DISTANCIA_INIC_MONITOR = 91 
+AREA_INIC_MONITOR = 295 #Tomado del video
+
+##Datos iniciales para medir distancia de una LAPTOP a la camara (CM)
+DISTANCIA_INIC_LAPTOP = 75 
+AREA_INIC_LAPTOP = 380 #Tomado del video
+
+##Datos iniciales para medir distancia de una MOUSE a la camara (CM)
+DISTANCIA_INIC_MOUSE = 37 
+AREA_INIC_MOUSE = 50 #Tomado del video
+
+
+##Datos iniciales para medir distancia de una TECLADO a la camara (CM)
+DISTANCIA_INIC_TECLADO = 40 
+AREA_INIC_TECLADO = 265 #Tomado del video
+
+##Datos iniciales para medir distancia de un CELULAR a la camara (CM)
+DISTANCIA_INIC_CELULAR = 37 
+AREA_INIC_CELULAR = 106 #Tomado del video
+
+
+##Datos iniciales para medir distancia de una LIBRO a la camara (CM)
+DISTANCIA_INIC_LIBRO = 37 
+AREA_INIC_LIBRO = 410 #Tomado del video
+
+##Datos iniciales para medir distancia de una RELOJ a la camara (CM)
+DISTANCIA_INIC_RELOJ = 21 
+AREA_INIC_RELOJ = 53 #Tomado del video
+
 
 def Convertir_RGB(img):
     b = img[:, :, 0].copy()
@@ -177,8 +234,8 @@ if __name__ == "__main__":
                         distancia = calcularDistancia(area_caja_trans, DISTANCIA_INIC_PERSONA, AREA_INIC_PERSONA)
                     elif classes[int(cls_pred)] == "celular":
                         distancia = calcularDistancia(area_caja_trans, DISTANCIA_INIC_CELULAR, AREA_INIC_CELULAR)    
-                    elif classes[int(cls_pred)] == "mochila":
-                        distancia = calcularDistancia(area_caja_trans, DISTANCIA_INIC_MOCHILA, AREA_INIC_MOCHILA)    
+                    #elif classes[int(cls_pred)] == "mochila":
+                        #distancia = calcularDistancia(area_caja_trans, DISTANCIA_INIC_MOCHILA, AREA_INIC_MOCHILA)    
                     
                     #Prueba de referencia
                     area_ref = obtenerAreaCaja(ancho_caja, altura_caja) 
