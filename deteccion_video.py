@@ -85,6 +85,24 @@ AREA_INIC_LIBRO = 410 #Tomado del video
 DISTANCIA_INIC_RELOJ = 21 
 AREA_INIC_RELOJ = 53 #Tomado del video
 
+#Creamos el diccionario que contiene todas las clases y las distancias 
+objetosDeteccion = {'persona': [DISTANCIA_INIC_PERSONA, AREA_INIC_PERSONA], 
+    'gato': [DISTANCIA_INIC_GATO, AREA_INIC_GATO], 
+    'botella': [DISTANCIA_INIC_BOTELLA, AREA_INIC_BOTELLA],
+    'tenedor': [DISTANCIA_INIC_TENEDOR, AREA_INIC_TENEDOR],
+    'cuchillo': [DISTANCIA_INIC_CUCHILLO, AREA_INIC_CUCHILLO],
+    'cuchara': [DISTANCIA_INIC_CUCHARA, AREA_INIC_CUCHARA],
+    'silla': [DISTANCIA_INIC_SILLA, AREA_INIC_SILLA],
+    'cama': [DISTANCIA_INIC_CAMA, AREA_INIC_CAMA],
+    'inodoro': [DISTANCIA_INIC_INODORO, AREA_INIC_INODORO],
+    'monitor': [DISTANCIA_INIC_MONITOR, AREA_INIC_MONITOR],
+    'laptop': [DISTANCIA_INIC_LAPTOP, AREA_INIC_LAPTOP],
+    'mouse': [DISTANCIA_INIC_MOUSE, AREA_INIC_MOUSE],
+    'teclado': [DISTANCIA_INIC_TECLADO, AREA_INIC_TECLADO],
+    'celular': [DISTANCIA_INIC_CELULAR, AREA_INIC_CELULAR],
+    'libro': [DISTANCIA_INIC_LIBRO, AREA_INIC_LIBRO],
+    'reloj': [DISTANCIA_INIC_RELOJ, AREA_INIC_RELOJ]}
+
 
 def Convertir_RGB(img):
     b = img[:, :, 0].copy()
@@ -162,7 +180,7 @@ if __name__ == "__main__":
     Tensor = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor
     if opt.webcam==1:
         #URL de IP WEBCAM
-        url = 'http://192.168.0.32:8080/shot.jpg'
+        url = 'http://192.168.0.2:8080/shot.jpg'
         #Aqui toma el video de la webcam
         cap = cv2.VideoCapture(0) #No cambiamos en ningun caso
         out = cv2.VideoWriter('output.mp4',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (1280,960))
@@ -230,19 +248,22 @@ if __name__ == "__main__":
                     #ancho_caja_trans = obtenerAnchoCaja(x1, x2)
                     distancia = 0
                     area_caja_trans = obtenerAreaCaja(ancho_caja,altura_caja)
-                    if classes[int(cls_pred)] == "persona":
-                        distancia = calcularDistancia(area_caja_trans, DISTANCIA_INIC_PERSONA, AREA_INIC_PERSONA)
-                    elif classes[int(cls_pred)] == "celular":
-                        distancia = calcularDistancia(area_caja_trans, DISTANCIA_INIC_CELULAR, AREA_INIC_CELULAR)    
+                    claseDetectada = classes[int(cls_pred)]
+                    distancia = calcularDistancia(area_caja_trans, objetosDeteccion[claseDetectada][0],objetosDeteccion[claseDetectada][1] )
+                    print("Medimos {} con dist Inic: {} y el areaRef: {}".format(claseDetectada, objetosDeteccion[claseDetectada][0], objetosDeteccion[claseDetectada][1]) )
+                    #if classes[int(cls_pred)] == "persona":
+                     #   distancia = calcularDistancia(area_caja_trans, DISTANCIA_INIC_PERSONA, AREA_INIC_PERSONA)
+                    #elif classes[int(cls_pred)] == "celular":
+                    #    distancia = calcularDistancia(area_caja_trans, DISTANCIA_INIC_CELULAR, AREA_INIC_CELULAR)    
                     #elif classes[int(cls_pred)] == "mochila":
                         #distancia = calcularDistancia(area_caja_trans, DISTANCIA_INIC_MOCHILA, AREA_INIC_MOCHILA)    
                     
                     #Prueba de referencia
                     area_ref = obtenerAreaCaja(ancho_caja, altura_caja) 
-                    cv2.putText(frame, str(area_ref) + "cm^2", centroide, 0, 1, (255,0,0), 3, cv2.LINE_AA)
+                    #cv2.putText(frame, str(area_ref) + "cm^2", centroide, 0, 1, (255,0,0), 3, cv2.LINE_AA)
 
                     #Escribimos la distancia
-                    #cv2.putText(frame, str(distancia) + "cm", centroide, 0, 1, (255,0,0), 3, cv2.LINE_AA)
+                    cv2.putText(frame, str(distancia) + "cm", centroide, 0, 1, (255,0,0), 3, cv2.LINE_AA)
                 
         #
         #Convertimos de vuelta a BGR para que cv2 pueda desplegarlo en los colores correctos
