@@ -89,6 +89,7 @@ AREA_INIC_RELOJ = 53 #Tomado del video
 objetosDeteccion = {'persona': [DISTANCIA_INIC_PERSONA, AREA_INIC_PERSONA], 
     'gato': [DISTANCIA_INIC_GATO, AREA_INIC_GATO], 
     'botella': [DISTANCIA_INIC_BOTELLA, AREA_INIC_BOTELLA],
+    'taza': [DISTANCIA_INIC_TAZA, AREA_INIC_TAZA],
     'tenedor': [DISTANCIA_INIC_TENEDOR, AREA_INIC_TENEDOR],
     'cuchillo': [DISTANCIA_INIC_CUCHILLO, AREA_INIC_CUCHILLO],
     'cuchara': [DISTANCIA_INIC_CUCHARA, AREA_INIC_CUCHARA],
@@ -123,6 +124,9 @@ def Convertir_BGR(img):
     img[:, :, 2] = r
     return img
 
+def sumarTuplas(tupla1, tupla2):
+    return tuple(a + b for a, b in zip(tupla1, tupla2))
+
 def dibujarLinea(imagen, puntoInicial, puntoFinal, color, grosor):
     cv2.line(imagen, puntoInicial, puntoFinal, color, grosor)
 
@@ -143,10 +147,8 @@ def calcularFocal(anchoPixeles, distInicial, anchoReal):
 def calcularDistancia(areaVariable, distInic, areaInic):
     return round(areaInic*distInic/areaVariable, 2) 
 
-def obtenerDistanciaClase(clase):
-    switcher = {
 
-    }
+    
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -322,10 +324,14 @@ def detectarObjetosYOLO():
     a=[]
     # Tomamos el tiempo para que dure solo 3 segundos la captacion de imagenes
     tiempo_inicial = time()
-
+    tiempo_final_temp = 0
+    tiempo_ejecucion = 0
     #Comienza a procesar las imagenes del video
+    #Declaramos el diccionario que va a tener todas las distancias y los objetos detectados 
+    medidasObjetosDetectados = []
+    
     while cap:
-        #torch.cuda.empty_cache()
+        #torch.cuda.empty_cache()  ##Posible solucion a problema de memoria de video
         
         #Abrimos la primera imagen del video
         ret, frame = cap.read()
@@ -338,7 +344,7 @@ def detectarObjetosYOLO():
 
         #Creamos e; frame 
         frame = cv2.resize(frame, (1280, 960), interpolation=cv2.INTER_CUBIC)
-        #LA imagen viene en Blue, Green, Red y la convertimos a RGB que es la entrada que requiere el modelo
+        #La imagen viene en Blue, Green, Red y la convertimos a RGB que es la entrada que requiere el modelo
         #Preparamos la imagen de aucerdo a los tensores para que el modelo pueda entenderlo
         RGBimg=Convertir_RGB(frame)
         imgTensor = transforms.ToTensor()(RGBimg)
@@ -384,7 +390,7 @@ def detectarObjetosYOLO():
                     area_caja_trans = obtenerAreaCaja(ancho_caja,altura_caja)
                     claseDetectada = classes[int(cls_pred)]
                     distancia = calcularDistancia(area_caja_trans, objetosDeteccion[claseDetectada][0],objetosDeteccion[claseDetectada][1] )
-                    print("Medimos {} con dist Inic: {} y el areaRef: {}".format(claseDetectada, objetosDeteccion[claseDetectada][0], objetosDeteccion[claseDetectada][1]) )
+                    #print("Medimos {} con dist Inic: {} y el areaRef: {}".format(claseDetectada, objetosDeteccion[claseDetectada][0], objetosDeteccion[claseDetectada][1]) )
                     
                     #Prueba de referencia-----------------------------
                     area_ref = obtenerAreaCaja(ancho_caja, altura_caja) 
@@ -392,7 +398,8 @@ def detectarObjetosYOLO():
                     #Fin prueba Referencia ---------------------------
                     #Escribimos la distancia
                     cv2.putText(frame, str(distancia) + "cm", centroide, 0, 1, (255,0,0), 3, cv2.LINE_AA)
-                
+                    
+                    medidasObjetosDetectados.append([claseDetectada, distancia, centroide])
         
         #Convertimos de vuelta a BGR para que cv2 pueda desplegarlo en los colores correctos
         
@@ -411,3 +418,32 @@ def detectarObjetosYOLO():
     out.release()
     cap.release()
     cv2.destroyAllWindows()
+    print("================================Fin deteccion========================")
+
+    #Se procede a calcular la media de la distancia en cada uno de los objetos detectados
+    respuestaDeteccion = {}
+    objetosDistanciaMedia = {}
+    for objeto in medidasObjetosDetectados:
+        nombreObjeto = objeto[0]
+        distanciaObjeto = objeto[1]
+        centroideObjeto = objeto[2]
+        #print("Se obtuvo {} a distancia {}".format(objeto[0], objeto[1]))
+        #Metemos cada clase con clave = nombreClase valor= [sumaDistancias, cantidadDistancias]
+        if objeto[0] not in respuestaDeteccion:
+            respuestaDeteccion[objeto[0]] = [distanciaObjeto, 1, centroideObjeto]
+        else:
+            respuestaDeteccion[objeto[0]][0] = respuestaDeteccion[objeto[0]][0] + distanciaObjeto
+            respuestaDeteccion[objeto[0]][1] = respuestaDeteccion[objeto[0]][1] + 1
+            respuestaDeteccion[objeto[0]][2] = sumarTuplas(respuestaDeteccion[objeto[0]][2], centroideObjeto)
+            
+    for clase in respuestaDeteccion.keys():
+        #print("El total de la clase {} es {}cm de {} medidas, posicion = {}".format(clase, respuestaDeteccion[clase][0],respuestaDeteccion[clase][1],respuestaDeteccion[clase][2] ))
+
+        #Armamos la respuesta final, tiene la distancia media en metros y la ubicacion en el eje horizontal de la camara 
+        numeroDetecciones = respuestaDeteccion[objeto[0]][1]
+        centroideTemp = respuestaDeteccion[clase][2]
+        centroideMedio = (round(float(centroideTemp[0])/ numeroDetecciones), round(float(centroideTemp[1])/ numeroDetecciones))
+        objetosDistanciaMedia[clase] = [round((respuestaDeteccion[clase][0] / respuestaDeteccion[clase][1])/100, 2), centroideMedio ]
+
+        print("La distancia media de la clase {} es {} m, el centroide medio es = {} ".format(clase, objetosDistanciaMedia[clase][0], objetosDistanciaMedia[clase][1] ))
+    return objetosDistanciaMedia

@@ -84,7 +84,12 @@ fraseObjetosAlFrente = 'Al frente tienes'
 try:
     while(1): 
         print('Estoy escuchando')
-        deteccion_video.detectarObjetosYOLO()
+        objetosDetectados = deteccion_video.detectarObjetosYOLO()
+        fraseDeteccion = fraseObjetosAlFrente
+        for objeto in objetosDetectados.keys():
+            fraseDeteccion = fraseDeteccion + " un {}, a {} metros, ".format( objeto, objetosDetectados[objeto][0])
+        hablar(fraseDeteccion)
+        print("============================LA CONSULTA SE HIZO CON EXITO===============")
         entrada = grabarAudio()
         entrada = entrada.lower()
         if nombreAsistente in entrada: 
