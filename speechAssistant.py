@@ -51,24 +51,40 @@ def responder(entrada):
     if existe(['hola', 'buenos días', 'buenas tardes', 'buenas noches']):
         hablar(fraseBienvenido)
     
-    #2Buscar todos los objetos que tengo al frente
-    if "que tengo al frente" in entrada:
-        deteccion_video.detectarObjetosYOLO()
-        fraseDeteccion = fraseObjetosAlFrente
-        for objeto in objetos:
-            fraseDeteccion = fraseDeteccion + ' ' + objeto + ','
+    #2Buscar todos los objetos que tengo en pantalla (FUNCIONANDO)
+    if "que tengo a mi alrededor" in entrada:
+        objetosDetectados = deteccion_video.detectarObjetosYOLO()
+        fraseDeteccion = fraseObjetosAlrededor
+        for objeto in objetosDetectados.keys():
+            fraseDeteccion = fraseDeteccion + " un {}, a {} metros, ".format( objeto, objetosDetectados[objeto][0])
         hablar(fraseDeteccion)
-
+        print("============================LA CONSULTA ALREDEDOR SE HIZO CON EXITO===============")
     #3 Buscar objetos y sus distancias 
     if existe(['distancia', 'lejos']):
         fraseDeteccion = "Tienes"
         for objeto in objetosDistancia.keys():
             fraseDeteccion = fraseDeteccion + "{} {} a {} metros, ".format(objetosDistancia[objeto][0],objeto,objetosDistancia[objeto][1] )
         hablar(fraseDeteccion)
-    #4 Buscar objetos a la derecha 
-
-    #5 Buscar objetos a la izquierda 
-
+    #4 Buscar objetos a la izquierda (FUNCIONANDO) 
+    if existe(['mi izquierda','la izquierda']):
+        objetosDetectados = deteccion_video.detectarObjetosYOLO()
+        fraseDeteccion = fraseObjetosIzquierda
+        for objeto in objetosDetectados.keys():
+            if objetosDetectados[objeto][1][0] < limiteSegmentoIzquierda:
+                fraseDeteccion = fraseDeteccion + " un {}, a {} metros, ".format( objeto, objetosDetectados[objeto][0])
+            
+        hablar(fraseDeteccion)
+        print("============================LA CONSULTA IZQUIERDA SE HIZO CON EXITO===============")
+    #5 Buscar objetos a la derecha (FUNCIONANDO) 
+    if existe(['mi derecha','la derecha']):
+        objetosDetectados = deteccion_video.detectarObjetosYOLO()
+        fraseDeteccion = fraseObjetosDerecha
+        for objeto in objetosDetectados.keys():
+            if objetosDetectados[objeto][1][0] > limiteSegmentoCentro:
+                fraseDeteccion = fraseDeteccion + " un {}, a {} metros, ".format( objeto, objetosDetectados[objeto][0])
+            
+        hablar(fraseDeteccion)
+        print("============================LA CONSULTA DERECHA SE HIZO CON EXITO===============")
 
 
 ##Implementacion asistente de voz
@@ -80,16 +96,15 @@ nombreUsuario = 'javier'
 nombreAsistente = 'victoria'
 fraseBienvenido ="Hola {}, soy {}, ¿en qué te puedo ayudar?".format(nombreUsuario, nombreAsistente)
 fraseDespedida = "Adiós " + nombreUsuario
-fraseObjetosAlFrente = 'Al frente tienes'
+fraseObjetosAlrededor = 'A tu alrededor tienes'
+fraseObjetosDerecha = 'A tu derecha tienes'
+fraseObjetosIzquierda = 'A tu izquierda tienes'
+limiteSegmentoIzquierda = 240
+limiteSegmentoCentro = 900
+
 try:
     while(1): 
         print('Estoy escuchando')
-        objetosDetectados = deteccion_video.detectarObjetosYOLO()
-        fraseDeteccion = fraseObjetosAlFrente
-        for objeto in objetosDetectados.keys():
-            fraseDeteccion = fraseDeteccion + " un {}, a {} metros, ".format( objeto, objetosDetectados[objeto][0])
-        hablar(fraseDeteccion)
-        print("============================LA CONSULTA SE HIZO CON EXITO===============")
         entrada = grabarAudio()
         entrada = entrada.lower()
         if nombreAsistente in entrada: 
