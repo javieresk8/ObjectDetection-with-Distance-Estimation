@@ -5,7 +5,7 @@ from playsound import playsound
 import os
 import random
 from gtts import gTTS 
-
+import deteccion_video
 r= sr.Recognizer()
 mic = sr.Microphone()
 def hablar(au_string):
@@ -53,7 +53,7 @@ def responder(entrada):
     
     #2Buscar todos los objetos que tengo al frente
     if "que tengo al frente" in entrada:
-        
+        deteccion_video.detectarObjetosYOLO()
         fraseDeteccion = fraseObjetosAlFrente
         for objeto in objetos:
             fraseDeteccion = fraseDeteccion + ' ' + objeto + ','
@@ -84,7 +84,7 @@ fraseObjetosAlFrente = 'Al frente tienes'
 try:
     while(1): 
         print('Estoy escuchando')
-        
+        deteccion_video.detectarObjetosYOLO()
         entrada = grabarAudio()
         entrada = entrada.lower()
         if nombreAsistente in entrada: 
