@@ -111,7 +111,7 @@ def responder(entrada):
         quit()
     
     #7 Preguntar si un objeto esta al frente, responde SI/NO y la distancia (FUNCIONANDO)
-    if existe(['busca','hay algún', 'hay alguna']):
+    if existe(['busca','hay algún', 'hay alguna', 'hay un', 'hay algún']):
         objetosDetectados = deteccion_video.detectarObjetosYOLO()
         palabras = entrada.split()
         bandera = True
@@ -159,8 +159,8 @@ fraseObjetosIzquierda = 'A tu izquierda tienes'
 fraseObjetosCentro = 'Al frente tienes '
 fraseNoEncontreObjetos = 'Lo siento, no encontré objetos que conozco'
 fraseOrdenObjetos = 'Te los diré de izquierda a derecha, tienes '
-limiteSegmentoIzquierda = 240
-limiteSegmentoCentro = 900
+limiteSegmentoIzquierda = 450
+limiteSegmentoCentro = 830
 
 try:
     while(1): 
