@@ -6,6 +6,7 @@ import os
 import random
 from gtts import gTTS 
 import deteccion_video
+import operator
 r= sr.Recognizer()
 mic = sr.Microphone()
 def hablar(au_string):
@@ -124,13 +125,26 @@ def responder(entrada):
             fraseDeteccion = "No encontré ese objeto"
             hablar(fraseDeteccion)
         print("============================LA CONSULTA DERECHA SE HIZO CON EXITO===============")
-    #8 Pregunta cuantos objetos de una clase hay
-
-    #9 Pregunta el orden de los objetos que tiene alrededor 
-     
+    #8 Pregunta el orden de los objetos que tiene alrededor 
+    if existe(['orden','órden']):
+        objetosDetectados = deteccion_video.detectarObjetosYOLO()
+        if len(objetosDetectados) > 0:
+            objetosOrdenado = {}
+            for obj in objetosDetectados.keys():
+                objetosOrdenado[obj] = objetosDetectados[obj][1][0]
+            objetosOrdenado = sorted(objetosOrdenado.items(), key=operator.itemgetter(1))
+            fraseDeteccion = fraseOrdenObjetos
+            for objeto in objetosOrdenado:
+                
+                fraseDeteccion = fraseDeteccion + " un {}, ".format(objeto[0])
+                
+            hablar(fraseDeteccion)
+            print("============================LA CONSULTA ORDEN SE HIZO CON EXITO===============")
+        else: 
+            hablar(fraseNoEncontreObjetos)
     
 
-##Implementacion asistente de voz
+##Implementacion asistente de voz=====================================================================
 objetos = ['monitor', 'persona', 'gato', 'teclado'] #Util para funcion #2
 objetosDistancia = {"monitor": [2, 125.2],
                     "persona": [1, 325.2],
@@ -144,7 +158,7 @@ fraseObjetosDerecha = 'A tu derecha tienes'
 fraseObjetosIzquierda = 'A tu izquierda tienes'
 fraseObjetosCentro = 'Al frente tienes '
 fraseNoEncontreObjetos = 'Lo siento, no encontré objetos que conozco'
-fraseDespedida = "Adios " + nombreUsuario
+fraseOrdenObjetos = 'Te los diré de izquierda a derecha, tienes '
 limiteSegmentoIzquierda = 240
 limiteSegmentoCentro = 900
 
@@ -158,15 +172,6 @@ try:
             print(entrada)
         else:
             print("Estoy esperando")
-        #if ('adiós' in entrada):
-         #   hablar(fraseDespedida)
-          #  sys.exit()
-        #print(entrada)
-        
-       # if 'hola victoria' in entrada:
-        #    hablar(fraseBienvenido)
-        #else: 
-         #   print('Sigo esperando...')
 except sr.UnknownValueError: 
     print('No escucho nada...')
 except sr.RequestError as e:
