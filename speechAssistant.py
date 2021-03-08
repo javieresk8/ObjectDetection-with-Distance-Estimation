@@ -118,7 +118,7 @@ def responder(entrada):
         
         for palabra in palabras:
             if palabra in objetosDetectados.keys():
-                fraseDeteccion = "Si, encontré un {} a {} metros".format(palabra, objetosDetectados[palabra][0]) 
+                fraseDeteccion = "Si, encontré  {} a {} metros".format(palabra, objetosDetectados[palabra][0]) 
                 hablar(fraseDeteccion)    
                 bandera = False
         if bandera:
@@ -136,7 +136,7 @@ def responder(entrada):
             fraseDeteccion = fraseOrdenObjetos
             for objeto in objetosOrdenado:
                 
-                fraseDeteccion = fraseDeteccion + " un {}, ".format(objeto[0])
+                fraseDeteccion = fraseDeteccion + " {}, ".format(objeto[0])
                 
             hablar(fraseDeteccion)
             print("============================LA CONSULTA ORDEN SE HIZO CON EXITO===============")
