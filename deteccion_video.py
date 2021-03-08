@@ -228,38 +228,38 @@ if __name__ == "__main__":
                 detection = rescale_boxes(detection, opt.img_size, RGBimg.shape[:2])
                 for x1, y1, x2, y2, conf, cls_conf, cls_pred in detection:
                     #Validamos que no sea una clase que no buscamos 
-                    if classes[int(cls_pred)] == 'null':
+                    if classes[int(cls_pred)] == '':
                         continue
-                    print("Saltamos una clase===============================")
-
-                    #Calculamos dimensiones de la caja
-                    ancho_caja = x2 - x1
-                    altura_caja = y2 - y1
-                    color = [int(c) for c in colors[int(cls_pred)]]
-                    print("Se detectó {} en X1= {}, Y1= {}, X2= {}, Y2= {}".format(classes[int(cls_pred)], x1, y1, x2, y2))
-                    frame = cv2.rectangle(frame, (x1, y1 + altura_caja), (x2, y1), color, 5)
-                    cv2.putText(frame, classes[int(cls_pred)], (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 5)# Nombre de la clase detectada
-                    cv2.putText(frame, str("%.2f" % float(conf)), (x2, y2 - altura_caja), cv2.FONT_HERSHEY_SIMPLEX, 0.5,color, 5) # Certeza de prediccion de la clase
-                    #Dibujamos la linea en el centro de cada imagen
-                    centroide = obtenerCentroide(x1, y1, x2, y2)
-                    dibujarLinea(frame, (640,960), centroide, (0,255,0), 3)
-                    
-                    #CALCULAMOS LA DISTANCIA
-                    #Inicio switch 
-                    #=============================================
-                    #ancho_caja_trans = obtenerAnchoCaja(x1, x2)
-                    distancia = 0
-                    area_caja_trans = obtenerAreaCaja(ancho_caja,altura_caja)
-                    claseDetectada = classes[int(cls_pred)]
-                    distancia = calcularDistancia(area_caja_trans, objetosDeteccion[claseDetectada][0],objetosDeteccion[claseDetectada][1] )
-                    print("Medimos {} con dist Inic: {} y el areaRef: {}".format(claseDetectada, objetosDeteccion[claseDetectada][0], objetosDeteccion[claseDetectada][1]) )
-                    
-                    #Prueba de referencia-----------------------------
-                    area_ref = obtenerAreaCaja(ancho_caja, altura_caja) 
-                    #cv2.putText(frame, str(area_ref) + "cm^2", centroide, 0, 1, (255,0,0), 3, cv2.LINE_AA)
-                    #Fin prueba Referencia ---------------------------
-                    #Escribimos la distancia
-                    cv2.putText(frame, str(distancia) + "cm", centroide, 0, 1, (255,0,0), 3, cv2.LINE_AA)
+                        print("Saltamos una clase===============================")
+                    else:
+                        #Calculamos dimensiones de la caja
+                        ancho_caja = x2 - x1
+                        altura_caja = y2 - y1
+                        color = [int(c) for c in colors[int(cls_pred)]]
+                        print("Se detectó {} en X1= {}, Y1= {}, X2= {}, Y2= {}".format(classes[int(cls_pred)], x1, y1, x2, y2))
+                        frame = cv2.rectangle(frame, (x1, y1 + altura_caja), (x2, y1), color, 5)
+                        cv2.putText(frame, classes[int(cls_pred)], (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 5)# Nombre de la clase detectada
+                        cv2.putText(frame, str("%.2f" % float(conf)), (x2, y2 - altura_caja), cv2.FONT_HERSHEY_SIMPLEX, 0.5,color, 5) # Certeza de prediccion de la clase
+                        #Dibujamos la linea en el centro de cada imagen
+                        centroide = obtenerCentroide(x1, y1, x2, y2)
+                        dibujarLinea(frame, (640,960), centroide, (0,255,0), 3)
+                        
+                        #CALCULAMOS LA DISTANCIA
+                        #Inicio switch 
+                        #=============================================
+                        #ancho_caja_trans = obtenerAnchoCaja(x1, x2)
+                        distancia = 0
+                        area_caja_trans = obtenerAreaCaja(ancho_caja,altura_caja)
+                        claseDetectada = classes[int(cls_pred)]
+                        distancia = calcularDistancia(area_caja_trans, objetosDeteccion[claseDetectada][0],objetosDeteccion[claseDetectada][1] )
+                        print("Medimos {} con dist Inic: {} y el areaRef: {}".format(claseDetectada, objetosDeteccion[claseDetectada][0], objetosDeteccion[claseDetectada][1]) )
+                        
+                        #Prueba de referencia-----------------------------
+                        area_ref = obtenerAreaCaja(ancho_caja, altura_caja) 
+                        #cv2.putText(frame, str(area_ref) + "cm^2", centroide, 0, 1, (255,0,0), 3, cv2.LINE_AA)
+                        #Fin prueba Referencia ---------------------------
+                        #Escribimos la distancia
+                        cv2.putText(frame, str(distancia) + "cm", centroide, 0, 1, (255,0,0), 3, cv2.LINE_AA)
                 
         #
         #Convertimos de vuelta a BGR para que cv2 pueda desplegarlo en los colores correctos
@@ -366,41 +366,41 @@ def detectarObjetosYOLO():
                 detection = rescale_boxes(detection, opt.img_size, RGBimg.shape[:2])
                 for x1, y1, x2, y2, conf, cls_conf, cls_pred in detection:
                     #Validamos que no sea una clase que no buscamos 
-                    if classes[int(cls_pred)] == 'null':
+                    if classes[int(cls_pred)] == '':
                         continue
-                    print("Saltamos una clase===============================")
-
-                    #Calculamos dimensiones de la caja
-                    ancho_caja = x2 - x1
-                    altura_caja = y2 - y1
-                    color = [int(c) for c in colors[int(cls_pred)]]
-                    print("Se detectó {} en X1= {}, Y1= {}, X2= {}, Y2= {}".format(classes[int(cls_pred)], x1, y1, x2, y2))
-                    frame = cv2.rectangle(frame, (x1, y1 + altura_caja), (x2, y1), color, 5)
-                    cv2.putText(frame, classes[int(cls_pred)], (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 5)# Nombre de la clase detectada
-                    cv2.putText(frame, str("%.2f" % float(conf)), (x2, y2 - altura_caja), cv2.FONT_HERSHEY_SIMPLEX, 0.5,color, 5) # Certeza de prediccion de la clase
-                    #Dibujamos la linea en el centro de cada imagen
-                    centroide = obtenerCentroide(x1, y1, x2, y2)
-                    dibujarLinea(frame, (640,960), centroide, (0,255,0), 3)
-                    
-                    #CALCULAMOS LA DISTANCIA
-                    #Inicio switch 
-                    #=============================================
-                    #ancho_caja_trans = obtenerAnchoCaja(x1, x2)
-                    distancia = 0
-                    area_caja_trans = obtenerAreaCaja(ancho_caja,altura_caja)
-                    claseDetectada = classes[int(cls_pred)]
-                    distancia = calcularDistancia(area_caja_trans, objetosDeteccion[claseDetectada][0],objetosDeteccion[claseDetectada][1] )
-                    #print("Medimos {} con dist Inic: {} y el areaRef: {}".format(claseDetectada, objetosDeteccion[claseDetectada][0], objetosDeteccion[claseDetectada][1]) )
-                    
-                    #Prueba de referencia-----------------------------
-                    area_ref = obtenerAreaCaja(ancho_caja, altura_caja) 
-                    #cv2.putText(frame, str(area_ref) + "cm^2", centroide, 0, 1, (255,0,0), 3, cv2.LINE_AA)
-                    #Fin prueba Referencia ---------------------------
-                    #Escribimos la distancia
-                    cv2.putText(frame, str(distancia) + "cm", centroide, 0, 1, (255,0,0), 3, cv2.LINE_AA)
-                    
-                    medidasObjetosDetectados.append([claseDetectada, distancia, centroide])
-        
+                        print("Saltamos una clase===============================")
+                    else:
+                        #Calculamos dimensiones de la caja
+                        ancho_caja = x2 - x1
+                        altura_caja = y2 - y1
+                        color = [int(c) for c in colors[int(cls_pred)]]
+                        print("Se detectó {} en X1= {}, Y1= {}, X2= {}, Y2= {}".format(classes[int(cls_pred)], x1, y1, x2, y2))
+                        frame = cv2.rectangle(frame, (x1, y1 + altura_caja), (x2, y1), color, 5)
+                        cv2.putText(frame, classes[int(cls_pred)], (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 5)# Nombre de la clase detectada
+                        cv2.putText(frame, str("%.2f" % float(conf)), (x2, y2 - altura_caja), cv2.FONT_HERSHEY_SIMPLEX, 0.5,color, 5) # Certeza de prediccion de la clase
+                        #Dibujamos la linea en el centro de cada imagen
+                        centroide = obtenerCentroide(x1, y1, x2, y2)
+                        dibujarLinea(frame, (640,960), centroide, (0,255,0), 3)
+                        
+                        #CALCULAMOS LA DISTANCIA
+                        #Inicio switch 
+                        #=============================================
+                        #ancho_caja_trans = obtenerAnchoCaja(x1, x2)
+                        distancia = 0
+                        area_caja_trans = obtenerAreaCaja(ancho_caja,altura_caja)
+                        claseDetectada = classes[int(cls_pred)]
+                        distancia = calcularDistancia(area_caja_trans, objetosDeteccion[claseDetectada][0],objetosDeteccion[claseDetectada][1] )
+                        #print("Medimos {} con dist Inic: {} y el areaRef: {}".format(claseDetectada, objetosDeteccion[claseDetectada][0], objetosDeteccion[claseDetectada][1]) )
+                        
+                        #Prueba de referencia-----------------------------
+                        area_ref = obtenerAreaCaja(ancho_caja, altura_caja) 
+                        #cv2.putText(frame, str(area_ref) + "cm^2", centroide, 0, 1, (255,0,0), 3, cv2.LINE_AA)
+                        #Fin prueba Referencia ---------------------------
+                        #Escribimos la distancia
+                        cv2.putText(frame, str(distancia) + "cm", centroide, 0, 1, (255,0,0), 3, cv2.LINE_AA)
+                        
+                        medidasObjetosDetectados.append([claseDetectada, distancia, centroide])
+            
         #Convertimos de vuelta a BGR para que cv2 pueda desplegarlo en los colores correctos
         
         if opt.webcam==1:
