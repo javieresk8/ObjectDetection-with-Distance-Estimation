@@ -41,7 +41,7 @@ AREA_INIC_CUCHILLO = 60 #Tomado del video
 
 ##Datos iniciales para medir distancia de una CUCHARA a la camara (CM)
 DISTANCIA_INIC_CUCHARA = 37 
-AREA_INIC_CUCHARA = 75 #Tomado del video
+AREA_INIC_CUCHARA = 85 #Tomado del video
 
 ##Datos iniciales para medir distancia de una SILLA a la camara (CM)
 DISTANCIA_INIC_SILLA = 150 
@@ -82,8 +82,8 @@ DISTANCIA_INIC_LIBRO = 37
 AREA_INIC_LIBRO = 410 #Tomado del video
 
 ##Datos iniciales para medir distancia de una RELOJ a la camara (CM)
-DISTANCIA_INIC_RELOJ = 21 
-AREA_INIC_RELOJ = 53 #Tomado del video
+#DISTANCIA_INIC_RELOJ = 21 
+#AREA_INIC_RELOJ = 53 #Tomado del video
 
 #Creamos el diccionario que contiene todas las clases y las distancias 
 objetosDeteccion = {'persona': [DISTANCIA_INIC_PERSONA, AREA_INIC_PERSONA], 
@@ -101,8 +101,7 @@ objetosDeteccion = {'persona': [DISTANCIA_INIC_PERSONA, AREA_INIC_PERSONA],
     'mouse': [DISTANCIA_INIC_MOUSE, AREA_INIC_MOUSE],
     'teclado': [DISTANCIA_INIC_TECLADO, AREA_INIC_TECLADO],
     'celular': [DISTANCIA_INIC_CELULAR, AREA_INIC_CELULAR],
-    'libro': [DISTANCIA_INIC_LIBRO, AREA_INIC_LIBRO],
-    'reloj': [DISTANCIA_INIC_RELOJ, AREA_INIC_RELOJ]}
+    'libro': [DISTANCIA_INIC_LIBRO, AREA_INIC_LIBRO]}
 
 
 def Convertir_RGB(img):
@@ -427,7 +426,7 @@ def detectarObjetosYOLO():
         nombreObjeto = objeto[0]
         distanciaObjeto = objeto[1]
         centroideObjeto = objeto[2]
-        #print("Se obtuvo {} a distancia {}".format(objeto[0], objeto[1]))
+        print("Se obtuvo {} a distancia {}".format(objeto[0], objeto[1]))
         #Metemos cada clase con clave = nombreClase valor= [sumaDistancias, cantidadDistancias]
         if objeto[0] not in respuestaDeteccion:
             respuestaDeteccion[objeto[0]] = [distanciaObjeto, 1, centroideObjeto]
@@ -437,7 +436,7 @@ def detectarObjetosYOLO():
             respuestaDeteccion[objeto[0]][2] = sumarTuplas(respuestaDeteccion[objeto[0]][2], centroideObjeto)
             
     for clase in respuestaDeteccion.keys():
-        #print("El total de la clase {} es {}cm de {} medidas, posicion = {}".format(clase, respuestaDeteccion[clase][0],respuestaDeteccion[clase][1],respuestaDeteccion[clase][2] ))
+        print("El total de la clase {} es {}cm de {} medidas, posicion = {}".format(clase, respuestaDeteccion[clase][0],respuestaDeteccion[clase][1],respuestaDeteccion[clase][2] ))
 
         #Armamos la respuesta final, tiene la distancia media en metros y la ubicacion en el eje horizontal de la camara 
         numeroDetecciones = respuestaDeteccion[objeto[0]][1]
